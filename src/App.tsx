@@ -3,14 +3,11 @@ import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import { BehaviorTracker } from "./Components/BehaviorTracker";
 import { Navbar } from "./Components/Navbar";
 import { Settings } from "./Components/Settings";
-import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
-
-const theme = createTheme();
+import { ThemeContextProvider } from "./Components/ThemeContext";
 
 export const App: React.FC = () => {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <ThemeContextProvider>
       <Router>
         <Navbar />
         <Routes>
@@ -18,6 +15,8 @@ export const App: React.FC = () => {
           <Route path="/settings" element={<Settings />} />
         </Routes>
       </Router>
-    </ThemeProvider>
+    </ThemeContextProvider>
   );
 };
+
+export default App;
