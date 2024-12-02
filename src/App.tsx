@@ -1,14 +1,13 @@
 import React from "react";
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
-import { BehaviorTracker } from "./Components/BehaviorTracker";
-import { Navbar } from "./Components/Navbar";
-import { Settings } from "./Components/Settings";
-import { ThemeContextProvider } from "./Components/ThemeContext";
+import { BehaviorTracker } from "./components/BehaviorTracker";
+import { Navbar } from "./components/Navbar";
+import { Settings } from "./components/Settings";
+import { ThemeContextProvider } from "./components/ThemeContext";
 
 export const App: React.FC = () => {
   return (
     <ThemeContextProvider>
-      {/* Ensure ThemeContextProvider wraps everything */}
       <Router>
         <Navbar />
         <Routes>

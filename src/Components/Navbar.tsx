@@ -8,9 +8,9 @@ import {
   Box,
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import { useThemeContext } from "./ThemeContext";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+import { useThemeContext } from "./ThemeContext";
 
 export const Navbar: React.FC = () => {
   const { toggleTheme, darkMode } = useThemeContext();
