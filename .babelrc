@@ -1,0 +1,15 @@
+{
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "browsers": ["last 2 versions", "iOS >= 10"]
+          },
+          "useBuiltIns": "entry",
+          "corejs": 3
+        }
+      ]
+    ]
+  }
+  
