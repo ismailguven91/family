@@ -10,7 +10,7 @@ export const App: React.FC = () => {
     <ThemeContextProvider>
       {/* Ensure ThemeContextProvider wraps everything */}
       <Router>
-        <Navbar />
+        {/* <Navbar /> */}
         <Routes>
           <Route path="/" element={<BehaviorTracker />} />
           <Route path="/settings" element={<Settings />} />
