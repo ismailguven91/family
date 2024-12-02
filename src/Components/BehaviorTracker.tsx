@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Box,
   Button,
@@ -34,6 +34,9 @@ export const BehaviorTracker: React.FC = () => {
   const [passwordInput, setPasswordInput] = useState("");
   const [error, setError] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const CORRECT_PASSWORD = "1234";
 
@@ -41,6 +44,16 @@ export const BehaviorTracker: React.FC = () => {
     const updatedKids = [...kids];
     updatedKids[index].score += delta;
     setKids(updatedKids);
+
+    // Log changes
+    console.log(
+      `Score changed: ${kids[index].name}, New Score: ${
+        updatedKids[index].score
+      }, Change: ${delta}, Time: ${new Date().toISOString()}`
+    );
+
+    // Capture picture
+    captureImage();
   };
 
   const resetScores = () => {
@@ -73,6 +86,44 @@ export const BehaviorTracker: React.FC = () => {
     setSnackbarOpen(false);
   };
 
+  const startCamera = async () => {
+    if (videoRef.current) {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      videoRef.current.srcObject = stream;
+      videoRef.current.play();
+    }
+  };
+
+  const captureImage = () => {
+    if (videoRef.current && canvasRef.current) {
+      const canvas = canvasRef.current;
+      const context = canvas.getContext("2d");
+      if (context) {
+        context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+        const imageData = canvas.toDataURL("image/png");
+        setCapturedImage(imageData);
+        console.log("Captured image data:", imageData);
+      }
+    }
+  };
+
+  const stopCamera = () => {
+    if (videoRef.current) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      if (stream) {
+        const tracks = stream.getTracks();
+        tracks.forEach((track) => track.stop());
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    startCamera();
+    return () => {
+      stopCamera();
+    };
+  }, []);
+
   const getScoreStyle = (score: number) => {
     if (score < 0) {
       return { background: "#ff6f61", color: "#fff" }; // Negative
@@ -94,6 +145,14 @@ export const BehaviorTracker: React.FC = () => {
         padding: 2,
       }}
     >
+      <video ref={videoRef} style={{ display: "none" }} />
+      <canvas
+        ref={canvasRef}
+        width={640}
+        height={480}
+        style={{ display: "none" }}
+      />
+
       {kids.map((kid, index) => {
         const { background, color } = getScoreStyle(kid.score);
 
@@ -113,184 +172,63 @@ export const BehaviorTracker: React.FC = () => {
               overflow: "hidden",
             }}
           >
-            {/* Minus Button on the Left */}
-            <Box
+            {/* Minus Button */}
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => handleScoreChange(index, -1)}
               sx={{
-                height: "100%",
                 flex: "0 0 20%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "rgba(0, 0, 0, 0.1)",
+                height: "100%",
+                borderRadius: 0,
               }}
             >
-              <Button
-                variant="contained"
-                color="error"
-                onClick={() => handleScoreChange(index, -1)}
-                sx={{
-                  fontSize: "2rem",
-                  width: "100%",
-                  height: "100%",
-                  borderRadius: 0,
-                  backgroundColor: "lightgray",
-                }}
-              >
-                -
-              </Button>
-            </Box>
+              -
+            </Button>
 
             {/* Center Content */}
             <CardContent
               sx={{
                 flex: "1 1 auto",
                 textAlign: "center",
-                padding: 2,
               }}
             >
-              <Typography
-                variant="h5"
-                sx={{
-                  fontWeight: "bold",
-                  marginBottom: 2,
-                  fontFamily: "Helvetica Neue",
-                }}
-              >
+              <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                 {kid.name}
               </Typography>
 
-              <Box sx={{ display: "flex", justifyContent: "center", gap: 4 }}>
-                {/* Phone Icon */}
-                <Box sx={{ position: "relative", display: "inline-block" }}>
-                  <PhoneAndroidIcon sx={{ fontSize: 48 }} />
-                  {kid.score <= 0 && (
-                    <CloseIcon
-                      sx={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        fontSize: 48,
-                        color: "rgba(255, 0, 0, 0.8)",
-                      }}
-                    />
-                  )}
-                </Box>
-
-                {/* Gaming Icon */}
-                <Box sx={{ position: "relative", display: "inline-block" }}>
-                  <SportsEsportsIcon sx={{ fontSize: 48 }} />
-                  {kid.score < 0 && (
-                    <CloseIcon
-                      sx={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        fontSize: 48,
-                        color: "rgba(255, 0, 0, 0.8)",
-                      }}
-                    />
-                  )}
-                </Box>
+              <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
+                <PhoneAndroidIcon sx={{ fontSize: 48 }} />
+                <SportsEsportsIcon sx={{ fontSize: 48 }} />
               </Box>
 
-              <Typography
-                variant="h6"
-                sx={{ fontSize: "1.5rem", marginTop: 2, fontWeight: "bold" }}
-              >
-                Poäng: <strong>{kid.score}</strong>
+              <Typography variant="h6" sx={{ fontSize: "1.5rem" }}>
+                Poäng: {kid.score}
               </Typography>
             </CardContent>
 
-            {/* Plus Button on the Right */}
-            <Box
+            {/* Plus Button */}
+            <Button
+              variant="contained"
+              onClick={() => handleScoreChange(index, 1)}
               sx={{
                 flex: "0 0 20%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "rgba(0, 0, 0, 0.1)",
                 height: "100%",
+                borderRadius: 0,
               }}
             >
-              <Button
-                variant="contained"
-                onClick={() => handleScoreChange(index, 1)}
-                sx={{
-                  fontSize: "2rem",
-                  width: "100%",
-                  height: "100%",
-                  borderRadius: 0,
-                  backgroundColor: "darkgray",
-                }}
-              >
-                +
-              </Button>
-            </Box>
+              +
+            </Button>
           </Card>
         );
       })}
 
-      {/* Reset Button */}
-      <Button
-        variant="outlined"
-        onClick={handleOpenPasswordDialog}
-        sx={{
-          marginTop: 3,
-          paddingX: 4,
-          fontWeight: "bold",
-          fontFamily: "Helvetica Neue",
-        }}
-      >
-        Nollställ Poäng
-      </Button>
-
-      {/* Password Dialog */}
-      <Dialog
-        open={passwordDialogOpen}
-        onClose={handleClosePasswordDialog}
-        aria-labelledby="password-dialog-title"
-      >
-        <DialogTitle id="password-dialog-title">Lösenord</DialogTitle>
-        <DialogContent>
-          <DialogContentText>Ange lösenord</DialogContentText>
-          <TextField
-            type="password"
-            fullWidth
-            variant="outlined"
-            margin="dense"
-            value={passwordInput}
-            onChange={(e) => setPasswordInput(e.target.value)}
-            error={error}
-            helperText={error ? "Incorrect password. Please try again." : ""}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClosePasswordDialog} color="error">
-            Avbryt
-          </Button>
-          <Button onClick={handlePasswordSubmit} color="primary">
-            Nollställ Poäng
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Success Snackbar */}
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleSnackbarClose}
-          severity="success"
-          sx={{ width: "100%" }}
-        >
-          Poängen har nollställts!
-        </Alert>
-      </Snackbar>
+      {capturedImage && (
+        <Box mt={2}>
+          <Typography variant="h6">Captured Image:</Typography>
+          <img src={capturedImage} alt="Captured" style={{ width: "100%" }} />
+        </Box>
+      )}
     </Box>
   );
 };
