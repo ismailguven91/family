@@ -5,6 +5,7 @@
   "homepage": "https://ismailguven91.github.io/family",
   "dependencies": {
     "@babel/preset-env": "^7.26.0",
+    "@babel/preset-react": "^7.25.9",
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
     "@mui/icons-material": "^6.1.9",
