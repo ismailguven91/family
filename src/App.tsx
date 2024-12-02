@@ -8,13 +8,19 @@ import { ThemeContextProvider } from "./Components/ThemeContext";
 export const App: React.FC = () => {
   return (
     <Router>
-      <Navbar />
       <Routes>
         <Route path="/" element={<BehaviorTracker />} />
         <Route path="/settings" element={<Settings />} />
       </Routes>
     </Router>
+    // <ThemeContextProvider>
+    //   <Router>
+    //     <Navbar />
+    //     <Routes>
+    //       <Route path="/" element={<BehaviorTracker />} />
+    //       <Route path="/settings" element={<Settings />} />
+    //     </Routes>
+    //   </Router>
+    // </ThemeContextProvider>
   );
 };
-
-export default App;
