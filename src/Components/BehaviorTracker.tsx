@@ -1,128 +1,67 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
   Typography,
   Card,
   CardContent,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  TextField,
   Snackbar,
   Alert,
 } from "@mui/material";
 import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
-import CloseIcon from "@mui/icons-material/Close";
-
+import liamImage from "../assets/images/liam.jpg";
+import isaacImage from "../assets/images/isaac.jpg";
+import noahImage from "../assets/images/noah.jpg";
 interface Kid {
   name: string;
   score: number;
+  image: string; // Path to the image
 }
 
 export const BehaviorTracker: React.FC = () => {
   const [kids, setKids] = useState<Kid[]>([
-    { name: "LIAM", score: 0 },
-    { name: "ISAAC", score: 0 },
-    { name: "NOAH", score: 0 },
+    { name: "LIAM", score: 0, image: liamImage },
+    { name: "ISAAC", score: 0, image: isaacImage },
+    { name: "NOAH", score: 0, image: noahImage },
   ]);
 
-  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
-  const [passwordInput, setPasswordInput] = useState("");
-  const [error, setError] = useState(false);
+  const [buttonsEnabled, setButtonsEnabled] = useState(false);
+  const [pressCount, setPressCount] = useState(0); // Track title presses
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const CORRECT_PASSWORD = "1234";
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (buttonsEnabled) {
+      timer = setTimeout(() => {
+        setButtonsEnabled(false);
+      }, 60000);
+    }
+    return () => clearTimeout(timer);
+  }, [buttonsEnabled]);
+
+  const handleTitlePress = () => {
+    setPressCount((prev) => {
+      const newCount = prev + 1;
+      if (newCount === 5) {
+        setButtonsEnabled(true);
+        setSnackbarOpen(true);
+      }
+      return newCount % 5;
+    });
+  };
 
   const handleScoreChange = (index: number, delta: number) => {
+    if (!buttonsEnabled) return;
+
     const updatedKids = [...kids];
     updatedKids[index].score += delta;
     setKids(updatedKids);
-
-    // Log changes
-    console.log(
-      `Score changed: ${kids[index].name}, New Score: ${
-        updatedKids[index].score
-      }, Change: ${delta}, Time: ${new Date().toISOString()}`
-    );
-
-    // Capture picture
-    captureImage();
-  };
-
-  const resetScores = () => {
-    const resetKids = kids.map((kid) => ({ ...kid, score: 0 }));
-    setKids(resetKids);
-    setPasswordDialogOpen(false);
-    setPasswordInput("");
-    setSnackbarOpen(true);
-  };
-
-  const handleOpenPasswordDialog = () => {
-    setPasswordDialogOpen(true);
-  };
-
-  const handleClosePasswordDialog = () => {
-    setPasswordDialogOpen(false);
-    setPasswordInput("");
-    setError(false);
-  };
-
-  const handlePasswordSubmit = () => {
-    if (passwordInput === CORRECT_PASSWORD) {
-      resetScores();
-    } else {
-      setError(true);
-    }
   };
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
-
-  const startCamera = async () => {
-    if (videoRef.current) {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      videoRef.current.srcObject = stream;
-      videoRef.current.play();
-    }
-  };
-
-  const captureImage = () => {
-    if (videoRef.current && canvasRef.current) {
-      const canvas = canvasRef.current;
-      const context = canvas.getContext("2d");
-      if (context) {
-        context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-        const imageData = canvas.toDataURL("image/png");
-        setCapturedImage(imageData);
-        console.log("Captured image data:", imageData);
-      }
-    }
-  };
-
-  const stopCamera = () => {
-    if (videoRef.current) {
-      const stream = videoRef.current.srcObject as MediaStream;
-      if (stream) {
-        const tracks = stream.getTracks();
-        tracks.forEach((track) => track.stop());
-      }
-    }
-  };
-
-  React.useEffect(() => {
-    startCamera();
-    return () => {
-      stopCamera();
-    };
-  }, []);
 
   const getScoreStyle = (score: number) => {
     if (score < 0) {
@@ -132,6 +71,24 @@ export const BehaviorTracker: React.FC = () => {
     } else {
       return { background: "#81c784", color: "#fff" }; // Positive
     }
+  };
+
+  const getIconStyle = (score: number, isPhone: boolean) => {
+    if (score < 0) {
+      return {
+        color: "rgba(0, 0, 0, 0.3)", // Disabled color
+        opacity: 0.5,
+      };
+    } else if (score === 0 && isPhone) {
+      return {
+        color: "rgba(0, 0, 0, 0.3)", // Disabled color
+        opacity: 0.5,
+      };
+    }
+    return {
+      color: "#000",
+      opacity: 1,
+    };
   };
 
   return (
@@ -145,13 +102,20 @@ export const BehaviorTracker: React.FC = () => {
         padding: 2,
       }}
     >
-      <video ref={videoRef} style={{ display: "none" }} />
-      <canvas
-        ref={canvasRef}
-        width={640}
-        height={480}
-        style={{ display: "none" }}
-      />
+      {/* Title */}
+      <Typography
+        variant="h4"
+        onClick={handleTitlePress}
+        sx={{
+          marginBottom: 2,
+          fontWeight: "bold",
+          fontFamily: "Helvetica Neue",
+          cursor: "pointer", // Indicate the title is clickable
+          userSelect: "none", // Prevent text selection
+        }}
+      >
+        Poäng
+      </Typography>
 
       {kids.map((kid, index) => {
         const { background, color } = getScoreStyle(kid.score);
@@ -172,63 +136,140 @@ export const BehaviorTracker: React.FC = () => {
               overflow: "hidden",
             }}
           >
-            {/* Minus Button */}
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() => handleScoreChange(index, -1)}
+            {/* Minus Button on the Left */}
+            <Box
               sx={{
-                flex: "0 0 20%",
                 height: "100%",
-                borderRadius: 0,
+                flex: "0 0 20%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "rgba(0, 0, 0, 0.1)",
               }}
             >
-              -
-            </Button>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => handleScoreChange(index, -1)}
+                disabled={!buttonsEnabled}
+                sx={{
+                  fontSize: "2rem",
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: 0,
+                  backgroundColor: "lightgray",
+                }}
+              >
+                -
+              </Button>
+            </Box>
 
             {/* Center Content */}
             <CardContent
               sx={{
                 flex: "1 1 auto",
                 textAlign: "center",
+                padding: 2,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+              {/* Circular Image */}
+              <Box
+                sx={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: "50%",
+                  overflow: "hidden",
+                  marginBottom: 2,
+                  border: "2px solid rgba(255, 255, 255, 0.8)",
+                }}
+              >
+                <img
+                  src={kid.image}
+                  alt={`${kid.name}'s avatar`}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              </Box>
+
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: "bold",
+                  marginBottom: 2,
+                  fontFamily: "Helvetica Neue",
+                }}
+              >
                 {kid.name}
               </Typography>
 
-              <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
-                <PhoneAndroidIcon sx={{ fontSize: 48 }} />
-                <SportsEsportsIcon sx={{ fontSize: 48 }} />
+              <Box sx={{ display: "flex", justifyContent: "center", gap: 4 }}>
+                {/* Phone Icon */}
+                <PhoneAndroidIcon
+                  sx={{ fontSize: 48, ...getIconStyle(kid.score, true) }}
+                />
+
+                {/* Gaming Icon */}
+                <SportsEsportsIcon
+                  sx={{ fontSize: 48, ...getIconStyle(kid.score, false) }}
+                />
               </Box>
 
-              <Typography variant="h6" sx={{ fontSize: "1.5rem" }}>
-                Poäng: {kid.score}
+              <Typography
+                variant="h6"
+                sx={{ fontSize: "1.5rem", marginTop: 2, fontWeight: "bold" }}
+              >
+                Poäng: <strong>{kid.score}</strong>
               </Typography>
             </CardContent>
 
-            {/* Plus Button */}
-            <Button
-              variant="contained"
-              onClick={() => handleScoreChange(index, 1)}
+            {/* Plus Button on the Right */}
+            <Box
               sx={{
                 flex: "0 0 20%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "rgba(0, 0, 0, 0.1)",
                 height: "100%",
-                borderRadius: 0,
               }}
             >
-              +
-            </Button>
+              <Button
+                variant="contained"
+                onClick={() => handleScoreChange(index, 1)}
+                disabled={!buttonsEnabled}
+                sx={{
+                  fontSize: "2rem",
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: 0,
+                  backgroundColor: "darkgray",
+                }}
+              >
+                +
+              </Button>
+            </Box>
           </Card>
         );
       })}
 
-      {capturedImage && (
-        <Box mt={2}>
-          <Typography variant="h6">Captured Image:</Typography>
-          <img src={capturedImage} alt="Captured" style={{ width: "100%" }} />
-        </Box>
-      )}
+      {/* Success Snackbar */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Knapparna går att använda i 1 minut!
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
