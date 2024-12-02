@@ -1,12 +1,13 @@
 {
-  "name": "family",
+  "name": "family-app",
   "version": "0.1.0",
   "private": true,
   "homepage": "https://ismailguven91.github.io/family",
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "web-vitals": "^4.2.4"
   },
   "scripts": {
     "start": "react-scripts start",
