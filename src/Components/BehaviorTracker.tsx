@@ -11,6 +11,8 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 interface Kid {
@@ -20,14 +22,15 @@ interface Kid {
 
 export const BehaviorTracker: React.FC = () => {
   const [kids, setKids] = useState<Kid[]>([
-    { name: "Liam", score: 0 },
-    { name: "Isaac", score: 0 },
-    { name: "Noah", score: 0 },
+    { name: "LIAM", score: 0 },
+    { name: "ISAAC", score: 0 },
+    { name: "NOAH", score: 0 },
   ]);
 
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
   const [error, setError] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // For success popup
 
   const CORRECT_PASSWORD = "1234";
 
@@ -42,6 +45,7 @@ export const BehaviorTracker: React.FC = () => {
     setKids(resetKids);
     setPasswordDialogOpen(false);
     setPasswordInput("");
+    setSnackbarOpen(true); // Show success popup
   };
 
   const handleOpenPasswordDialog = () => {
@@ -62,15 +66,19 @@ export const BehaviorTracker: React.FC = () => {
     }
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   const getScoreStyle = (score: number) => {
     if (score < 0) {
-      return { color: "#d32f2f", emoji: "😡", background: "#fdecea" };
+      return { background: "#ff6f61", emoji: "😡", color: "#fff" };
     } else if (score >= 0 && score <= 3) {
-      return { color: "#f57c00", emoji: "😐", background: "#fff3e0" };
+      return { background: "#ffb74d", emoji: "😐", color: "#fff" };
     } else if (score > 3 && score <= 7) {
-      return { color: "#2e7d32", emoji: "😊", background: "#e8f5e9" };
+      return { background: "#81c784", emoji: "😊", color: "#fff" };
     } else {
-      return { color: "#1976d2", emoji: "😃", background: "#e3f2fd" };
+      return { background: "#4fc3f7", emoji: "😃", color: "#fff" };
     }
   };
 
@@ -82,45 +90,41 @@ export const BehaviorTracker: React.FC = () => {
         alignItems: "center",
         justifyContent: "flex-start",
         height: "100vh",
-        backgroundColor: "#f5f5f5",
         padding: 2,
       }}
     >
+      {/* Title */}
+      <Typography variant="h4" sx={{ marginBottom: 2 }}>
+        Poäng Tracker
+      </Typography>
+
       {kids.map((kid, index) => {
-        const { color, emoji, background } = getScoreStyle(kid.score);
+        const { background, emoji, color } = getScoreStyle(kid.score);
 
         return (
           <Card
             key={index}
             sx={{
-              flex: "0 1 30%", // Cards are 30% of the height
-              width: "90%", // Cards take 90% of the width
-              marginBottom: 2, // Spacing between cards
+              width: "90%",
+              marginBottom: 2,
               borderRadius: 4,
               boxShadow: 3,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
               backgroundColor: background,
+              color: color,
             }}
           >
-            <CardContent
-              sx={{
-                textAlign: "center",
-              }}
-            >
+            <CardContent sx={{ textAlign: "center" }}>
               <Typography
                 variant="h5"
                 sx={{
                   fontWeight: "bold",
-                  color,
                   marginBottom: 1,
                 }}
               >
                 {kid.name} {emoji}
               </Typography>
-              <Typography variant="h6" sx={{ fontSize: "1.5rem", color }}>
-                Score: <strong>{kid.score}</strong>
+              <Typography variant="h6" sx={{ fontSize: "1.5rem" }}>
+                Poäng: <strong>{kid.score}</strong>
               </Typography>
               <Box
                 sx={{
@@ -152,17 +156,28 @@ export const BehaviorTracker: React.FC = () => {
         );
       })}
 
+      {/* Reset Button */}
+      <Button
+        variant="outlined"
+        onClick={handleOpenPasswordDialog}
+        sx={{
+          marginTop: 3,
+          paddingX: 4,
+          fontWeight: "bold",
+        }}
+      >
+        Nollställ Poäng
+      </Button>
+
       {/* Password Dialog */}
       <Dialog
         open={passwordDialogOpen}
         onClose={handleClosePasswordDialog}
         aria-labelledby="password-dialog-title"
       >
-        <DialogTitle id="password-dialog-title">Enter Password</DialogTitle>
+        <DialogTitle id="password-dialog-title">Lösenord</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Please enter the numeric password to reset all scores.
-          </DialogContentText>
+          <DialogContentText>Ange lösenord</DialogContentText>
           <TextField
             type="password"
             fullWidth
@@ -175,14 +190,30 @@ export const BehaviorTracker: React.FC = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClosePasswordDialog} color="secondary">
-            Cancel
+          <Button onClick={handleClosePasswordDialog} color="error">
+            Avbryt
           </Button>
           <Button onClick={handlePasswordSubmit} color="primary">
-            Submit
+            Nollställ Poäng
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Success Snackbar */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Poängen har nollställts!
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
