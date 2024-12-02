@@ -56,9 +56,9 @@ export const Navbar: React.FC = () => {
               fontWeight: "bold",
             }}
           >
-            Behavior
+            Poäng
           </Button>
-          <Button
+          {/* <Button
             color="inherit"
             component={Link}
             to="/settings"
@@ -68,7 +68,7 @@ export const Navbar: React.FC = () => {
             }}
           >
             Settings
-          </Button>
+          </Button> */}
         </Box>
       </Toolbar>
     </AppBar>

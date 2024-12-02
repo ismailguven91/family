@@ -14,6 +14,9 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
+import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface Kid {
   name: string;
@@ -30,7 +33,7 @@ export const BehaviorTracker: React.FC = () => {
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
   const [error, setError] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false); // For success popup
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const CORRECT_PASSWORD = "1234";
 
@@ -45,7 +48,7 @@ export const BehaviorTracker: React.FC = () => {
     setKids(resetKids);
     setPasswordDialogOpen(false);
     setPasswordInput("");
-    setSnackbarOpen(true); // Show success popup
+    setSnackbarOpen(true);
   };
 
   const handleOpenPasswordDialog = () => {
@@ -72,13 +75,11 @@ export const BehaviorTracker: React.FC = () => {
 
   const getScoreStyle = (score: number) => {
     if (score < 0) {
-      return { background: "#ff6f61", emoji: "😡", color: "#fff" };
-    } else if (score >= 0 && score <= 3) {
-      return { background: "#ffb74d", emoji: "😐", color: "#fff" };
-    } else if (score > 3 && score <= 7) {
-      return { background: "#81c784", emoji: "😊", color: "#fff" };
+      return { background: "#ff6f61", color: "#fff" }; // Negative
+    } else if (score === 0) {
+      return { background: "#ffb74d", color: "#fff" }; // Neutral
     } else {
-      return { background: "#4fc3f7", emoji: "😃", color: "#fff" };
+      return { background: "#81c784", color: "#fff" }; // Positive
     }
   };
 
@@ -93,13 +94,8 @@ export const BehaviorTracker: React.FC = () => {
         padding: 2,
       }}
     >
-      {/* Title */}
-      <Typography variant="h4" sx={{ marginBottom: 2 }}>
-        Poäng Tracker
-      </Typography>
-
       {kids.map((kid, index) => {
-        const { background, emoji, color } = getScoreStyle(kid.score);
+        const { background, color } = getScoreStyle(kid.score);
 
         return (
           <Card
@@ -108,50 +104,130 @@ export const BehaviorTracker: React.FC = () => {
               width: "90%",
               marginBottom: 2,
               borderRadius: 4,
-              boxShadow: 3,
+              boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
               backgroundColor: background,
               color: color,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              overflow: "hidden",
             }}
           >
-            <CardContent sx={{ textAlign: "center" }}>
+            {/* Minus Button on the Left */}
+            <Box
+              sx={{
+                height: "100%",
+                flex: "0 0 20%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => handleScoreChange(index, -1)}
+                sx={{
+                  fontSize: "2rem",
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: 0,
+                  backgroundColor: "lightgray",
+                }}
+              >
+                -
+              </Button>
+            </Box>
+
+            {/* Center Content */}
+            <CardContent
+              sx={{
+                flex: "1 1 auto",
+                textAlign: "center",
+                padding: 2,
+              }}
+            >
               <Typography
                 variant="h5"
                 sx={{
                   fontWeight: "bold",
-                  marginBottom: 1,
+                  marginBottom: 2,
+                  fontFamily: "Helvetica Neue",
                 }}
               >
-                {kid.name} {emoji}
+                {kid.name}
               </Typography>
-              <Typography variant="h6" sx={{ fontSize: "1.5rem" }}>
+
+              <Box sx={{ display: "flex", justifyContent: "center", gap: 4 }}>
+                {/* Phone Icon */}
+                <Box sx={{ position: "relative", display: "inline-block" }}>
+                  <PhoneAndroidIcon sx={{ fontSize: 48 }} />
+                  {kid.score <= 0 && (
+                    <CloseIcon
+                      sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        fontSize: 48,
+                        color: "rgba(255, 0, 0, 0.8)",
+                      }}
+                    />
+                  )}
+                </Box>
+
+                {/* Gaming Icon */}
+                <Box sx={{ position: "relative", display: "inline-block" }}>
+                  <SportsEsportsIcon sx={{ fontSize: 48 }} />
+                  {kid.score < 0 && (
+                    <CloseIcon
+                      sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        fontSize: 48,
+                        color: "rgba(255, 0, 0, 0.8)",
+                      }}
+                    />
+                  )}
+                </Box>
+              </Box>
+
+              <Typography
+                variant="h6"
+                sx={{ fontSize: "1.5rem", marginTop: 2, fontWeight: "bold" }}
+              >
                 Poäng: <strong>{kid.score}</strong>
               </Typography>
-              <Box
+            </CardContent>
+
+            {/* Plus Button on the Right */}
+            <Box
+              sx={{
+                flex: "0 0 20%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "rgba(0, 0, 0, 0.1)",
+                height: "100%",
+              }}
+            >
+              <Button
+                variant="contained"
+                onClick={() => handleScoreChange(index, 1)}
                 sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: 2,
-                  marginTop: 2,
+                  fontSize: "2rem",
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: 0,
+                  backgroundColor: "darkgray",
                 }}
               >
-                <Button
-                  variant="contained"
-                  color="success"
-                  onClick={() => handleScoreChange(index, 1)}
-                  sx={{ fontSize: "1rem" }}
-                >
-                  +
-                </Button>
-                <Button
-                  variant="contained"
-                  color="error"
-                  onClick={() => handleScoreChange(index, -1)}
-                  sx={{ fontSize: "1rem" }}
-                >
-                  -
-                </Button>
-              </Box>
-            </CardContent>
+                +
+              </Button>
+            </Box>
           </Card>
         );
       })}
@@ -164,6 +240,7 @@ export const BehaviorTracker: React.FC = () => {
           marginTop: 3,
           paddingX: 4,
           fontWeight: "bold",
+          fontFamily: "Helvetica Neue",
         }}
       >
         Nollställ Poäng
