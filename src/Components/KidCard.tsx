@@ -35,17 +35,14 @@ export const KidCard: React.FC<KidCardProps> = ({
   return (
     <Card
       sx={{
-        width: "90%",
+        display: "flex",
+        flexDirection: { xs: "column", sm: "row" }, // Buttons at top/bottom on small screens
+        width: "100%",
         marginBottom: 3,
         borderRadius: 16,
         boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.2)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        overflow: "hidden",
         background: `linear-gradient(145deg, ${getScoreStyle.background}, #ffffff10)`,
         color: getScoreStyle.color,
-        position: "relative",
         animation: "fadeIn 0.5s ease-out",
         "@keyframes fadeIn": {
           from: { opacity: 0 },
@@ -56,8 +53,9 @@ export const KidCard: React.FC<KidCardProps> = ({
       {/* Minus Button */}
       <Box
         sx={{
-          height: "100%",
-          flex: "0 0 20%",
+          flex: "0 0 auto",
+          height: { xs: "50px", sm: "100%" },
+          width: { xs: "100%", sm: "20%" },
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -98,10 +96,9 @@ export const KidCard: React.FC<KidCardProps> = ({
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          position: "relative",
+          gap: 1,
         }}
       >
-        {/* Circular Image with Glow */}
         <Stack
           sx={{
             width: 80,
@@ -129,14 +126,7 @@ export const KidCard: React.FC<KidCardProps> = ({
           />
         </Stack>
 
-        <Typography
-          variant="h5"
-          sx={{
-            fontWeight: "bold",
-            marginBottom: 1,
-            fontSize: "1.8rem",
-          }}
-        >
+        <Typography variant="h5" sx={{ fontWeight: "bold", marginBottom: 1 }}>
           {kid.name}
         </Typography>
 
@@ -144,8 +134,7 @@ export const KidCard: React.FC<KidCardProps> = ({
           sx={{
             display: "flex",
             justifyContent: "center",
-            gap: 1,
-            marginBottom: 2,
+            gap: 2,
           }}
         >
           <PhoneAndroidIcon
@@ -164,7 +153,7 @@ export const KidCard: React.FC<KidCardProps> = ({
           />
         </Box>
 
-        <Typography sx={{ fontSize: "1.8rem", fontWeight: "bold" }}>
+        <Typography sx={{ fontSize: "1.5rem", fontWeight: "bold" }}>
           Poäng: <strong>{kid.score}</strong>
         </Typography>
       </CardContent>
@@ -172,8 +161,9 @@ export const KidCard: React.FC<KidCardProps> = ({
       {/* Plus Button */}
       <Box
         sx={{
-          height: "100%",
-          flex: "0 0 20%",
+          flex: "0 0 auto",
+          height: { xs: "50px", sm: "100%" },
+          width: { xs: "100%", sm: "20%" },
           display: "flex",
           justifyContent: "center",
           alignItems: "center",

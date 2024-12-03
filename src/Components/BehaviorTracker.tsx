@@ -26,15 +26,18 @@ export const BehaviorTracker: React.FC = () => {
   return (
     <Box
       sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        height: "100vh",
+        display: "grid",
+        gridTemplateColumns: {
+          xs: "1fr", // Single column for portrait
+          landscape: "repeat(3, 1fr)", // Three columns for landscape orientation
+        },
+        gap: 2,
         padding: 2,
-        gap: 1, // Add spacing between elements
+        "@media screen and (orientation: landscape)": {
+          gridTemplateColumns: "repeat(3, 1fr)", // Explicit landscape handling
+        },
       }}
     >
-      {/* Title */}
       <Typography
         variant="h4"
         onClick={handleTitlePress}
@@ -42,7 +45,8 @@ export const BehaviorTracker: React.FC = () => {
           marginBottom: 2,
           fontWeight: "bold",
           cursor: "pointer",
-          userSelect: "none", // Prevent text selection
+          userSelect: "none",
+          gridColumn: "span 3", // Center title across columns in landscape mode
         }}
       >
         Poäng
@@ -55,11 +59,10 @@ export const BehaviorTracker: React.FC = () => {
           index={index}
           buttonsEnabled={buttonsEnabled}
           onScoreChange={handleScoreChange}
-          getScoreStyle={getScoreStyle(kid.score)} // Pass score style here
+          getScoreStyle={getScoreStyle(kid.score)}
         />
       ))}
 
-      {/* Snackbar for Buttons Enabled */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={3000}
