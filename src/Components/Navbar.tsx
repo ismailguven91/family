@@ -47,6 +47,7 @@ export const Navbar: React.FC = () => {
           {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
         <Box sx={{ display: "flex", gap: 2 }}>
+          {/* Link to Behavior Tracker */}
           <Button
             color="inherit"
             component={Link}
@@ -58,17 +59,19 @@ export const Navbar: React.FC = () => {
           >
             Poäng
           </Button>
-          {/* <Button
+
+          {/* Link to Achievements */}
+          <Button
             color="inherit"
             component={Link}
-            to="/settings"
+            to="/achievements"
             sx={{
               textTransform: "none",
               fontWeight: "bold",
             }}
           >
-            Settings
-          </Button> */}
+            Achievements
+          </Button>
         </Box>
       </Toolbar>
     </AppBar>

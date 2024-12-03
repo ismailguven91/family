@@ -35,14 +35,17 @@ export const KidCard: React.FC<KidCardProps> = ({
   return (
     <Card
       sx={{
-        display: "flex",
-        flexDirection: { xs: "column", sm: "row" }, // Buttons at top/bottom on small screens
-        width: "100%",
+        width: "90%",
         marginBottom: 3,
         borderRadius: 16,
         boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.2)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        overflow: "hidden",
         background: `linear-gradient(145deg, ${getScoreStyle.background}, #ffffff10)`,
         color: getScoreStyle.color,
+        position: "relative",
         animation: "fadeIn 0.5s ease-out",
         "@keyframes fadeIn": {
           from: { opacity: 0 },
@@ -53,9 +56,8 @@ export const KidCard: React.FC<KidCardProps> = ({
       {/* Minus Button */}
       <Box
         sx={{
-          flex: "0 0 auto",
-          height: { xs: "50px", sm: "100%" },
-          width: { xs: "100%", sm: "20%" },
+          height: "100%",
+          flex: "0 0 20%",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -96,9 +98,11 @@ export const KidCard: React.FC<KidCardProps> = ({
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: 1,
+          //   gap: 1,
+          position: "relative",
         }}
       >
+        {/* Circular Image with Glow */}
         <Stack
           sx={{
             width: 80,
@@ -106,15 +110,15 @@ export const KidCard: React.FC<KidCardProps> = ({
             borderRadius: "50%",
             overflow: "hidden",
             marginBottom: 2,
-            border: `4px solid rgba(255, 255, 255, 0.8)`,
-            boxShadow: `0px 0px 15px 5px rgba(255, 255, 255, 0.3)`,
+            border: `2px solid rgba(255, 255, 255, 0.5)`, // Softer border
+            boxShadow: `0px 0px 10px 2px rgba(255, 255, 255, 0.2)`, // Subtle glow
             animation: "pulse 2s infinite ease-in-out",
             "@keyframes pulse": {
               "0%, 100%": {
-                boxShadow: `0px 0px 15px 5px rgba(255, 255, 255, 0.3)`,
+                boxShadow: `0px 0px 10px 2px rgba(255, 255, 255, 0.2)`, // Less intense pulse
               },
               "50%": {
-                boxShadow: `0px 0px 25px 10px rgba(255, 255, 255, 0.5)`,
+                boxShadow: `0px 0px 15px 4px rgba(255, 255, 255, 0.3)`, // Subtle increase in glow
               },
             },
           }}
@@ -126,15 +130,23 @@ export const KidCard: React.FC<KidCardProps> = ({
           />
         </Stack>
 
-        <Typography variant="h5" sx={{ fontWeight: "bold", marginBottom: 1 }}>
+        {/* <Typography
+          variant="h5"
+          sx={{
+            fontWeight: "bold",
+            marginBottom: 1,
+            fontSize: "1.8rem",
+          }}
+        >
           {kid.name}
-        </Typography>
+        </Typography> */}
 
         <Box
           sx={{
             display: "flex",
             justifyContent: "center",
             gap: 2,
+            marginBottom: 2,
           }}
         >
           <PhoneAndroidIcon
@@ -153,7 +165,7 @@ export const KidCard: React.FC<KidCardProps> = ({
           />
         </Box>
 
-        <Typography sx={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+        <Typography sx={{ fontSize: "1.8rem", fontWeight: "bold" }}>
           Poäng: <strong>{kid.score}</strong>
         </Typography>
       </CardContent>
@@ -161,9 +173,8 @@ export const KidCard: React.FC<KidCardProps> = ({
       {/* Plus Button */}
       <Box
         sx={{
-          flex: "0 0 auto",
-          height: { xs: "50px", sm: "100%" },
-          width: { xs: "100%", sm: "20%" },
+          height: "100%",
+          flex: "0 0 20%",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",

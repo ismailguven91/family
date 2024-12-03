@@ -25,3 +25,23 @@ export const getIconStyle = (score: number, isPhone: boolean) => {
     opacity: 1,
   };
 };
+
+// utils/achievements.ts
+export const badges = [
+  { threshold: 10, label: "Bronze", image: "/assets/images/bronze.png" },
+  { threshold: 25, label: "Silver", image: "/assets/images/silver.png" },
+  { threshold: 50, label: "Gold", image: "/assets/images/gold.png" },
+  { threshold: 100, label: "Diamond", image: "/assets/images/diamond.png" },
+];
+
+export const getBadgeDetails = (score: number) => {
+  const currentBadge = badges.find((b) => score >= b.threshold) || badges[0];
+  const nextBadge =
+    badges.find((b) => b.threshold > score) || badges[badges.length - 1];
+  const progressToNextBadge =
+    nextBadge.threshold > score
+      ? Math.round((score / nextBadge.threshold) * 100)
+      : 100;
+
+  return { currentBadge, nextBadge, progressToNextBadge };
+};
